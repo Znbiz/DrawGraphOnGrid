@@ -4,7 +4,6 @@ function gridLayout() {}
  * This source code is licensed under the GPLv3 License.
  * Author: Alexei Nekrasov (znbiz, E-mail: nekrasov.aleks1992@gmail.com)
  */
-
 gridLayout.calculate = function(nodes, edges, size) {
     /**
      * Each node number is put into correspondence with an array of numbers of neighboring vertex
@@ -259,8 +258,74 @@ gridLayout.calculate = function(nodes, edges, size) {
 
     function determine_coordinates_for_nodes(coordinate, neighbors, nodes_optimal_path) {
         var result = [];
+        var map = {}; // хранятся занятые координаты
+
+        result[nodes_optimal_path[0].number_nodes] = [0, 0]; // задаём координаты для первой вершины с наибольшим спец.числом
+        map[0 + "_" + 0] = true;
+console.log(coordinate[1])
+        var k = 1, j = 0;
+        for(var i = 0; i < nodes_optimal_path[0].weight_neighbors.length; i++) {
+            if(!result[nodes_optimal_path[0].weight_neighbors[i].number_nodes]) {
+                // бегаем по k кольцу
+                while(k < coordinate.length) {
+                    // Как в k кольце закончились свободные места переходим на k+1 кольцо
+                    if(j == coordinate[k].length) {
+                        j = 0;
+                        k++;
+                    } else {
+                        
+                        if(!map[(coordinate[k][j].location[0] + result[nodes_optimal_path[0].number_nodes][0]) + "_" + (coordinate[k][j].location[1] + result[nodes_optimal_path[0].number_nodes][1])]) {
+                            /*
+                                После того как мы нашли свободное место, нам нужно оттойти от него. Т.к. у каждого узла есть свои соседи и их нужно потом будет рисовать
+                                1) Определим на какое расстояние нужно отодвинуть, для этого будем использовать специальный номер этой вершины
+                             */
+                            // var spec_number = nodes_optimal_path[0].weight_neighbors[i].weight_nodes;
+                            // var sum = 0;
+                            // for(var i_new = 0; i_new < coordinate.length; i_new++) {
+                            //     if(sum >= spec_number) {
+                            //         break;
+                            //     } else {
+                            //         sum += coordinate[i_new].length;
+                            //     }
+                            // }
+                            // var k_new = k + i_new - 1; // получили номер кольца на котором нужно расположить вершину
+
+                            // var coord = [];
+                            // var j_new = 0;
+                            // while(k_new < coordinate.length) { 
+                            //     // Как в k кольце закончились свободные места переходим на k+1 кольцо
+                            //     if(j_new == coordinate[k_new].length) {
+                            //         j_new = 0;
+                            //         k_new++;
+                            //     } else {
+                            //         if(!map[(coordinate[k_new][j_new].location[0] + result[nodes_optimal_path[0].number_nodes][0]) + "_" + 
+                            //             (coordinate[k_new][j_new].location[1] + result[nodes_optimal_path[0].number_nodes][1])]) {
+                            //             coord = [
+                            //                 coordinate[k_new][j_new].location[0] + result[nodes_optimal_path[0].number_nodes][0],
+                            //                 coordinate[k_new][j_new].location[1] + result[nodes_optimal_path[0].number_nodes][1]
+                            //                 ];
+                            //             break;
+                            //         }
+                            //     }
+                            // } console.log(1212)
+                            coord = [
+                                            coordinate[k][j].location[0] + result[nodes_optimal_path[0].number_nodes][0],
+                                            coordinate[k][j].location[1] + result[nodes_optimal_path[0].number_nodes][1]];
+                            result[nodes_optimal_path[0].weight_neighbors[i].number_nodes] = coord;
+                            map[coord[0] + "_" + coord[1]] = true;
+                            j++;
+                            break;
+                        }
+                        j++;
+                    }
+                }
+            }
+        }
+
+        console.log(nodes_optimal_path[0].number_nodes);
+        console.log(result)
         for(var i = 0; i < nodes.length; i++){
-            result[i] = [i, i];
+            // result[i] = [i, i];
         } 
         return result;
     }
