@@ -159,11 +159,43 @@ gridLayout.calculate = function(nodes, edges, size) {
             weight_nodes[i] /= (nodes.length-1);
         }
 
-        return [weight_nodes, matrix_length];
+        var result = [];
+        for(var i  = 0; i < weight_nodes.length; i++) {
+            var neighbors_temp = [];
+            var k = 0;
+            for(var j = 0; j < matrix_length[i].length; j++) {
+                // оставляем только соседей
+                if(matrix_length[i][j] == 1) {
+                    neighbors_temp[k++] = {number_nodes: j, weight_nodes: weight_nodes[j]};
+                }
+            }
+            neighbors_temp.sort(function(a,b) {return a.weight_nodes > b.weight_nodes; });
+            result[i] = {number_nodes: i, weight_nodes: weight_nodes[i], weight_neighbors: neighbors_temp};
+        }
+        /*
+         Возращается массив следующего типа. Массив упорядочен по уменьшению специального числа каждой вершины
+         [  // описание каждого узла
+            {
+                number_nodes: 1, // номер вершины, которую рассматриваем
+                weight_nodes: 12.21, // специальный номер, количество оптимальных путей проходящий через данную вершину поделённое на количество вершин графа
+                weight_neighbors: // массив всех соседей данной вершины упорядоченный по возрастанию специального числа
+                [
+                    //
+                    {
+                        number_nodes: 12, // номер вершины
+                        weight_nodes: 1 // специальный номер, количество оптимальных путей проходящий через данную вершину поделённое на количество вершин графа
+                    },
+                    {...}
+                ]
+            },
+            {...}
+         ]
+         */
+        return result.sort(function(a,b) {return a.weight_nodes < b.weight_nodes; });
     }
 
     /**
-     * Функция создаёт массив координат упорядоченных по приближённости к центру
+     * Функция создаёт массив координат упорядоченных по приближённости к центdру
      * 1.1) По количеству точек nodes_number вычисляем радиус окружности, в которую поместятся все точки
      * 1.2) Вписываем данную окружность в минимальный квадрат с целочисленной длинной стороны
      * 1.3) Проверяем каждую вершину квадрата по следующему признаку, входит ли она в круг?
@@ -225,6 +257,14 @@ gridLayout.calculate = function(nodes, edges, size) {
         return result_location;
     }
 
+    function determine_coordinates_for_nodes(coordinate, neighbors, nodes_optimal_path) {
+        var result = [];
+        for(var i = 0; i < nodes.length; i++){
+            result[i] = [i, i];
+        } 
+        return result;
+    }
+
     var time = Date.now();
     ///////////////////////////////////////////////////////////////////////////////////////////////
     /// main
@@ -232,7 +272,7 @@ gridLayout.calculate = function(nodes, edges, size) {
     var size_temp =  Math.sqrt(nodes.length);
 
     var coordinate = coordinates_for_location_nodes(nodes.length)
-
+    
     /*
     An associative array of vertex indices of names
      */
@@ -243,13 +283,12 @@ gridLayout.calculate = function(nodes, edges, size) {
 
     var neighbors = Neighbors(number_nodes_label);
     
-    var result = MainDijkstrasAlgorithm(neighbors);
-
-    // console.log(result)
-    console.log(Date.now() - time)
+    var nodes_optimal_path = MainDijkstrasAlgorithm(neighbors);
+console.log(nodes_optimal_path)
+    var coord_nodes = determine_coordinates_for_nodes(coordinate, neighbors, nodes_optimal_path);
     for(var i = 0; i < nodes.length; i++){
-        nodes[i].x = i;
-        nodes[i].y = i;
+        nodes[i].x = coord_nodes[i][0];
+        nodes[i].y = coord_nodes[i][1];
     } 
 
 }
