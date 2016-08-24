@@ -218,31 +218,29 @@ gridLayout.calculate = function(nodes, edges, size) {
             for (var j = 0; j <= a_querty; j++) {
                 var length = Math.sqrt(i * i + j * j);
                 if (length <= r) {
-                    var location_node = {length: 0, location: [0,0]};
+                    var location_node;
                     if ((i == 0) && (j == 0)) {
+                        location_node = {length: 0, location: [0,0]};
                         result_location[0].push(location_node);
                     } else if (i == 0) {
-                        location_node.length = length;
-                        location_node.location = [0, j];
+                        location_node = {length: length, location: [0, j]};
                         result_location[j].push(location_node);
-                        location_node.location = [0, -j];
+                        location_node = {length: length, location: [0, -j]};
                         result_location[j].push(location_node);
                     } else if (j == 0) {
-                        location_node.length = length;
-                        location_node.location = [i, 0];
+                        location_node = {length: length, location: [i, 0]};
                         result_location[i].push(location_node);
-                        location_node.location = [-i, 0];
+                        location_node = {length: length, location: [-i, 0]};
                         result_location[i].push(location_node);
                     } else {
                         var k_r = Math.floor(length) + 1;
-                        location_node.length = length;
-                        location_node.location = [i, j];
+                        location_node = {length: length, location: [i, j]};
                         result_location[k_r].push(location_node);
-                        location_node.location = [i, -j];
+                        location_node = {length: length, location: [i, -j]};
                         result_location[k_r].push(location_node);
-                        location_node.location = [-i, j];
+                        location_node = {length: length, location: [-i, j]};
                         result_location[k_r].push(location_node);
-                        location_node.location = [-i, -j];
+                        location_node = {length: length, location: [-i, -j]};
                         result_location[k_r].push(location_node);
                     }
                 }
@@ -251,18 +249,29 @@ gridLayout.calculate = function(nodes, edges, size) {
 
         for (var i = 0; i <= Math.floor(r) + 1; i++) {
             result_location[i].sort( function (a,b) { return a.length > b.length; });
-        }
-
+        }   
         return result_location;
     }
+
 
     function determine_coordinates_for_nodes(coordinate, neighbors, nodes_optimal_path) {
         var result = [];
         var map = {}; // хранятся занятые координаты
 
+        // var draw_nodes = { // отрисованы ли узлы 
+        // nodes_true = []; // если у узла уже определены координаты
+
+        /*
+         data_node - данные о узле. Элемент массива nodes_optimal_path
+         
+         */
+        var coor_recurs = function(data_node, ) {
+
+        }
+
         result[nodes_optimal_path[0].number_nodes] = [0, 0]; // задаём координаты для первой вершины с наибольшим спец.числом
         map[0 + "_" + 0] = true;
-console.log(coordinate[1])
+
         var k = 1, j = 0;
         for(var i = 0; i < nodes_optimal_path[0].weight_neighbors.length; i++) {
             if(!result[nodes_optimal_path[0].weight_neighbors[i].number_nodes]) {
@@ -279,38 +288,40 @@ console.log(coordinate[1])
                                 После того как мы нашли свободное место, нам нужно оттойти от него. Т.к. у каждого узла есть свои соседи и их нужно потом будет рисовать
                                 1) Определим на какое расстояние нужно отодвинуть, для этого будем использовать специальный номер этой вершины
                              */
-                            // var spec_number = nodes_optimal_path[0].weight_neighbors[i].weight_nodes;
-                            // var sum = 0;
-                            // for(var i_new = 0; i_new < coordinate.length; i_new++) {
-                            //     if(sum >= spec_number) {
-                            //         break;
-                            //     } else {
-                            //         sum += coordinate[i_new].length;
-                            //     }
-                            // }
-                            // var k_new = k + i_new - 1; // получили номер кольца на котором нужно расположить вершину
+                            var spec_number = nodes_optimal_path[0].weight_neighbors[i].weight_nodes;
+                            var sum = 0;
+                            for(var i_new = 0; i_new < coordinate.length; i_new++) {
+                                if(sum >= spec_number) {
+                                    break;
+                                } else {
+                                    sum += coordinate[i_new].length;
+                                }
+                            }
+                            var k_new = k + i_new - 1; // получили номер кольца на котором нужно расположить вершину
 
-                            // var coord = [];
-                            // var j_new = 0;
-                            // while(k_new < coordinate.length) { 
-                            //     // Как в k кольце закончились свободные места переходим на k+1 кольцо
-                            //     if(j_new == coordinate[k_new].length) {
-                            //         j_new = 0;
-                            //         k_new++;
-                            //     } else {
-                            //         if(!map[(coordinate[k_new][j_new].location[0] + result[nodes_optimal_path[0].number_nodes][0]) + "_" + 
-                            //             (coordinate[k_new][j_new].location[1] + result[nodes_optimal_path[0].number_nodes][1])]) {
-                            //             coord = [
-                            //                 coordinate[k_new][j_new].location[0] + result[nodes_optimal_path[0].number_nodes][0],
-                            //                 coordinate[k_new][j_new].location[1] + result[nodes_optimal_path[0].number_nodes][1]
-                            //                 ];
-                            //             break;
-                            //         }
-                            //     }
-                            // } console.log(1212)
-                            coord = [
-                                            coordinate[k][j].location[0] + result[nodes_optimal_path[0].number_nodes][0],
-                                            coordinate[k][j].location[1] + result[nodes_optimal_path[0].number_nodes][1]];
+                            var coord = [];
+                            var j_new = 0;
+                            while(k_new < coordinate.length) { 
+                                // Как в k кольце закончились свободные места переходим на k+1 кольцо
+                                if(j_new == coordinate[k_new].length) {
+                                    j_new = 0;
+                                    k_new++;
+                                } else {
+                                    if(!map[(coordinate[k_new][j_new].location[0] + result[nodes_optimal_path[0].number_nodes][0]) + "_" + 
+                                        (coordinate[k_new][j_new].location[1] + result[nodes_optimal_path[0].number_nodes][1])]) {
+                                        coord = [
+                                            coordinate[k_new][j_new].location[0] + result[nodes_optimal_path[0].number_nodes][0],
+                                            coordinate[k_new][j_new].location[1] + result[nodes_optimal_path[0].number_nodes][1]
+                                            ];
+                                        break;
+                                    }
+                                }
+                                j_new++;
+                            }
+                            // coord = [
+                            //             coordinate[k][j].location[0] + result[nodes_optimal_path[0].number_nodes][0],
+                            //             coordinate[k][j].location[1] + result[nodes_optimal_path[0].number_nodes][1]
+                            //         ];
                             result[nodes_optimal_path[0].weight_neighbors[i].number_nodes] = coord;
                             map[coord[0] + "_" + coord[1]] = true;
                             j++;
@@ -322,11 +333,22 @@ console.log(coordinate[1])
             }
         }
 
-        console.log(nodes_optimal_path[0].number_nodes);
-        console.log(result)
         for(var i = 0; i < nodes.length; i++){
+            if(!result[i]) result[i] = [i, i];
             // result[i] = [i, i];
         } 
+
+        var min_x = min_y = 0;
+        for(var i = 0; i < nodes.length; i++) {
+            min_x = min_x > result[i][0] ? result[i][0] : min_x;
+            min_y = min_y > result[i][1] ? result[i][1] : min_y;
+        }
+        min_x = Math.abs(min_x);
+        min_y = Math.abs(min_y);
+        for(var i = 0; i < nodes.length; i++) {
+            result[i][0] += min_x;
+            result[i][1] += min_y;
+        }
         return result;
     }
 
@@ -336,7 +358,7 @@ console.log(coordinate[1])
     ///////////////////////////////////////////////////////////////////////////////////////////////
     var size_temp =  Math.sqrt(nodes.length);
 
-    var coordinate = coordinates_for_location_nodes(nodes.length)
+    var coordinate = coordinates_for_location_nodes(2 * nodes.length)
     
     /*
     An associative array of vertex indices of names
@@ -349,7 +371,7 @@ console.log(coordinate[1])
     var neighbors = Neighbors(number_nodes_label);
     
     var nodes_optimal_path = MainDijkstrasAlgorithm(neighbors);
-console.log(nodes_optimal_path)
+
     var coord_nodes = determine_coordinates_for_nodes(coordinate, neighbors, nodes_optimal_path);
     for(var i = 0; i < nodes.length; i++){
         nodes[i].x = coord_nodes[i][0];
